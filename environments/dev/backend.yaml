@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: 873593444498.dkr.ecr.eu-central-1.amazonaws.com/fleet-backend:v1
+        ports:
+        - containerPort: 8000
+        env:
+
+        - name: DATABASE_URL
+          value: "postgresql+psycopg://fleet_admin:admin123@dev-fleet-db-instance.cnuak8o40dpr.eu-central-1.rds.amazonaws.com:5432/postgres"
+        - name: SECRET_KEY
+          value: "maciej_perek"
+        - name: DEFAULT_ADMIN_EMAIL
+          value: "admin@fleet.pl"
+        - name: DEFAULT_ADMIN_PASSWORD
+          value: "admin123"
+        - name: DEFAULT_ADMIN_NAME
+          value: "Administrator"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

@@ -21,12 +21,13 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_eip" "nat" {
   domain = "vpc"
+  count  = local.nat_gateway_count
 }
 
 resource "aws_nat_gateway" "nat" {
-  count = local.nat_gateway_count
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public[0].id
+  count         = local.nat_gateway_count
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
 
   tags = {
     Name = "${var.environment}-nat-gateway"
@@ -43,8 +44,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "${var.environment}-public-subnet-${count.index + 1}"
-    "kubernetes.io/role/elb" = "1"
+    Name                                        = "${var.environment}-public-subnet-${count.index + 1}"
+    "kubernetes.io/role/elb"                    = "1"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
@@ -56,8 +57,8 @@ resource "aws_subnet" "private" {
   availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name                              = "${var.environment}-private-subnet-${count.index + 1}"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name                                        = "${var.environment}-private-subnet-${count.index + 1}"
+    "kubernetes.io/role/internal-elb"           = "1"
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
@@ -65,14 +66,15 @@ resource "aws_subnet" "private" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-
   tags = {
     Name = "${var.environment}-public-rt"
   }
+}
+
+resource "aws_route" "public_internet_access" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
 resource "aws_route_table_association" "public" {
@@ -82,20 +84,23 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
   count  = length(var.private_subnets)
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = var.environment == "prod" ? aws_nat_gateway.nat[count.index].id : aws_nat_gateway.nat[0].id
-  }
+  vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.environment}-private-rt"
+    Name = "${var.environment}-private-rt-${count.index + 1}"
   }
+}
+
+resource "aws_route" "private_nat_access" {
+  count                  = length(var.private_subnets)
+  route_table_id         = aws_route_table.private[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat[count.index % local.nat_gateway_count].id
 }
 
 resource "aws_route_table_association" "private" {
   count          = length(var.private_subnets)
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  route_table_id = aws_route_table.private[count.index].id
 }

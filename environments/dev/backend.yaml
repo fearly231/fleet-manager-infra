@@ -20,17 +20,37 @@ spec:
         ports:
         - containerPort: 8000
         env:
-
         - name: DATABASE_URL
-          value: "postgresql+psycopg://fleet_admin:admin123@dev-fleet-db-instance.cnuak8o40dpr.eu-central-1.rds.amazonaws.com:5432/postgres"
+          valueFrom:
+            secretKeyRef:
+              name: fleet-backend-secrets
+              key: DATABASE_URL
         - name: SECRET_KEY
-          value: "maciej_perek"
+          valueFrom:
+            secretKeyRef:
+              name: fleet-backend-secrets
+              key: SECRET_KEY
         - name: DEFAULT_ADMIN_EMAIL
           value: "admin@fleet.pl"
         - name: DEFAULT_ADMIN_PASSWORD
-          value: "admin123"
+          valueFrom:
+            secretKeyRef:
+              name: fleet-backend-secrets
+              key: DEFAULT_ADMIN_PASSWORD
         - name: DEFAULT_ADMIN_NAME
           value: "Administrator"
+        livenessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
         resources:
           requests:
             cpu: "100m"

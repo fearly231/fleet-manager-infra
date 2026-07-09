@@ -26,3 +26,12 @@ variable "scaling_max_size" {
   description = "The maximum number of worker nodes"
   type        = number
 }
+variable "allowed_admin_cidrs" {
+  description = "A list of CIDR blocks allowed to access the EKS cluster API"
+  type        = list(string)
+}
+variable "capacity_type" {
+  description = "The capacity type for the EKS worker nodes (e.g., ON_DEMAND, SPOT)"
+  type        = string
+  default     = "ON_DEMAND"
+}

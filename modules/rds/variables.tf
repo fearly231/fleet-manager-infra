@@ -32,3 +32,7 @@ variable "db_password" {
     type        = string
     sensitive   = true
 }
+variable "eks_nodes_security_group_id" {
+    description = "The security group ID of the EKS nodes"
+    type        = string
+}

@@ -10,7 +10,7 @@ module "vpc" {
   public_subnets     = var.public_subnets
   private_subnets    = var.private_subnets
   availability_zones = var.availability_zones
-  cluster_name       = var.cluster_name
+  cluster_name       = "${var.environment}-fleet-eks-cluster"
 }
 
 module "rds" {

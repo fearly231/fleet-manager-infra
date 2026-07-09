@@ -2,17 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: fleet-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # To obcina /api zanim zapytanie trafi do Twojego kodu w Pythonie
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      # 1. Ruch do Backendu (wszystko co ma /api/ na początku)
-      - path: /api(/|$)(.*)
+      # 1. Ruch do Backendu (zostawiamy prefiks /api, bo kod w Pythonie go oczekuje)
+      - path: /api
         pathType: Prefix
         backend:
           service:
@@ -20,8 +16,8 @@ spec:
             port:
               number: 8000
       
-      # 2. Ruch do dokumentacji Swaggera (FastAPI używa /docs i /openapi.json)
-      - path: /docs(/|$)(.*)
+      # 2. Ruch do dokumentacji Swaggera i OpenAPI
+      - path: /docs
         pathType: Prefix
         backend:
           service:
@@ -36,8 +32,8 @@ spec:
             port:
               number: 8000
 
-      # 3. Cała reszta ruchu leci na Frontend Next.js
-      - path: /()(.*)
+      # 3. Cała reszta ruchu leci na Frontend Next.js (domyślny fallback)
+      - path: /
         pathType: Prefix
         backend:
           service:

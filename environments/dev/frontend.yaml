@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 873593444498.dkr.ecr.eu-central-1.amazonaws.com/fleet-frontend:v2
+        image: 873593444498.dkr.ecr.eu-central-1.amazonaws.com/dev-fleet-ecr-frontend:latest
         ports:
         - containerPort: 3000 
         env:
@@ -38,11 +38,11 @@ spec:
           periodSeconds: 10
         resources:
           requests:
-            cpu: "50m"
-            memory: "64Mi"
-          limits:
             cpu: "100m"
-            memory: "128Mi"
+            memory: "256Mi"
+          limits:
+            cpu: "200m"
+            memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service

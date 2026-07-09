@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: 873593444498.dkr.ecr.eu-central-1.amazonaws.com/fleet-backend:v1
+        image: 873593444498.dkr.ecr.eu-central-1.amazonaws.com/dev-fleet-ecr-backend:latest
         ports:
         - containerPort: 8000
         env:

@@ -6,3 +6,4 @@
 *.tfvars.json
 *.auto.tfvars
 .DS_Store
+.tfstate

@@ -23,12 +23,7 @@ resource "aws_vpc_security_group_ingress_rule" "postgres" {
   referenced_security_group_id = var.eks_nodes_security_group_id
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_all" {
-  security_group_id = aws_security_group.rds.id
-  description       = "Allow all outbound traffic"
-  ip_protocol       = "-1"
-  cidr_ipv4         = "0.0.0.0/0"
-}
+
 
 resource "aws_db_instance" "main" {
   identifier                = "${var.environment}-fleet-db-instance"
@@ -41,7 +36,7 @@ resource "aws_db_instance" "main" {
   password                  = var.db_password
   db_subnet_group_name      = aws_db_subnet_group.main.name
   vpc_security_group_ids    = [aws_security_group.rds.id]
-  multi_az                  = var.environment == "prod" ? true : false
+  multi_az                  = var.multi_az
   skip_final_snapshot       = var.environment != "prod" ? true : false
   final_snapshot_identifier = var.environment == "prod" ? "${var.environment}-fleet-db-final-snapshot" : null
   publicly_accessible       = false

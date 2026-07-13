@@ -18,11 +18,7 @@ variable "availability_zones" {
   description = "A list of availability zones for the subnets"
   type        = list(string)
 }
-# db_password variable has been removed because the password is generated dynamically via random_password.
-variable "cluster_name" {
-  description = "The name of the EKS cluster"
-  type        = string
-}
+
 variable "allowed_admin_cidrs" {
   description = "A list of CIDR blocks allowed to access the EKS cluster API"
   type        = list(string)

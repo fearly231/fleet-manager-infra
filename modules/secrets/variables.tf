@@ -23,3 +23,8 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+variable "admin_password" {
+  description = "The default admin password for the application"
+  type        = string
+  sensitive   = true
+}

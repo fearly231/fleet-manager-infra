@@ -9,8 +9,8 @@ resource "aws_secretsmanager_secret" "app_secrets" {
 resource "aws_secretsmanager_secret_version" "app_secrets_version" {
   secret_id = aws_secretsmanager_secret.app_secrets.id
   secret_string = jsonencode({
-    DATABASE_URL           = "postgresql://${var.db_username}:${var.db_password}@${var.db_endpoint}:${var.db_port}/${var.db_name}"
+    DATABASE_URL           = "postgresql+psycopg://${var.db_username}:${var.db_password}@${var.db_endpoint}/${var.db_name}"
     SECRET_KEY             = random_password.jwt_secret.result
-    DEFAULT_ADMIN_PASSWORD = var.db_password
+    DEFAULT_ADMIN_PASSWORD = var.admin_password
   })
 }

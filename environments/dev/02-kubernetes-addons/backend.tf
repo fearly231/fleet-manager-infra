@@ -11,7 +11,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "fleet-manager-terraform-state-adam"
+    bucket       = "fleet-manager-terraform-state-adam" #
     key          = "dev/02-kubernetes-addons/fleet-manager.tfstate"
     region       = "eu-central-1"
     use_lockfile = true

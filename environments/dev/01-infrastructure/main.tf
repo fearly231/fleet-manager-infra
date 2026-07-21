@@ -69,4 +69,11 @@ module "dns" {
   source      = "../../../modules/dns"
   environment = var.environment
   domain_name = var.domain_name
+  base_domain = var.base_domain
+}
+
+module "github_oidc" {
+  source      = "../../../modules/github-oidc"
+  environment = var.environment
+  github_repo = "fearly231/fleet-manager-infra"
 }

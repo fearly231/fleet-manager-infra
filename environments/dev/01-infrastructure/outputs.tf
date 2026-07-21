@@ -55,3 +55,8 @@ output "grafana_password" {
   value     = random_password.grafana_password.result
   sensitive = true
 }
+
+output "github_actions_role_arn" {
+  value       = module.github_oidc.role_arn
+  description = "ARN utworzonej roli dla GitHub Actions"
+}

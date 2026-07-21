@@ -1,8 +1,5 @@
-resource "aws_route53_zone" "selected" {
-  name = var.domain_name
-  tags = {
-    Environment = var.environment
-  }
+data "aws_route53_zone" "selected" {
+  name = var.base_domain
 }
 
 resource "aws_acm_certificate" "cert" {
@@ -26,7 +23,7 @@ resource "aws_route53_record" "cert_validation" {
     }
   }
   allow_overwrite = true
-  zone_id         = aws_route53_zone.selected.zone_id
+  zone_id         = data.aws_route53_zone.selected.zone_id
   name            = each.value.name
   type            = each.value.type
   records         = [each.value.record]

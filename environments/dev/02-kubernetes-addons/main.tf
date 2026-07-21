@@ -36,6 +36,7 @@ provider "helm" {
 module "argocd" {
   source      = "../../../modules/argocd"
   environment = var.environment
+  depends_on  = [module.aws_lbc]
 }
 
 resource "null_resource" "argocd_apps_cleanup" {
@@ -64,6 +65,7 @@ module "eso" {
   environment             = var.environment
   oidc_provider_arn       = local.oidc_provider_arn
   cluster_oidc_issuer_url = local.cluster_oidc_issuer
+  depends_on              = [module.aws_lbc]
 }
 
 module "aws_lbc" {
@@ -84,6 +86,7 @@ module "karpenter" {
   cluster_oidc_issuer_url = local.cluster_oidc_issuer
   node_role_name          = local.node_role_name
   node_profile_name       = local.node_profile_name
+  depends_on              = [module.aws_lbc]
 }
 
 module "external_dns" {
@@ -93,6 +96,7 @@ module "external_dns" {
   oidc_provider_arn       = local.oidc_provider_arn
   cluster_oidc_issuer_url = local.cluster_oidc_issuer
   route53_zone_id         = local.route53_zone_id
+  depends_on              = [module.aws_lbc]
 }
 
 module "ingress_nginx" {
@@ -105,7 +109,7 @@ module "ingress_nginx" {
 module "observability" {
   source           = "../../../modules/observability"
   environment      = var.environment
-  domain_name      = "dev-grafana.$${var.domain_name}"
+  domain_name      = "dev-grafana.${var.domain_name}"
   grafana_password = local.grafana_password
   depends_on       = [module.ingress_nginx]
 }

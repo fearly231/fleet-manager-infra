@@ -9,7 +9,7 @@ terraform {
       version = "~> 2.11"
     }
   }
-#
+
   backend "s3" {
     bucket       = "fleet-manager-terraform-state-adam"
     key          = "dev/02-kubernetes-addons/fleet-manager.tfstate"

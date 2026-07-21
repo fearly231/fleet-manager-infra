@@ -27,7 +27,7 @@ jobs:
     environment: dev
     env:
       AWS_REGION: eu-central-1
-      ROLE_TO_ASSUME: arn:aws:iam::873593444498:role/github-actions-terraform-prod-role
+      ROLE_TO_ASSUME: arn:aws:iam::873593444498:role/github-actions-terraform-dev-role
 
     defaults:
       run:

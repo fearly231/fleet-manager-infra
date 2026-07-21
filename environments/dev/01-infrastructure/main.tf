@@ -49,15 +49,15 @@ module "eks" {
 }
 
 module "secrets" {
-  source         = "../../../modules/secrets"
-  environment    = var.environment
-  db_username    = "fleet_admin"
+  source           = "../../../modules/secrets"
+  environment      = var.environment
+  db_username      = "fleet_admin"
   db_password      = random_password.db_password.result
   admin_password   = random_password.admin_password.result
   grafana_password = random_password.grafana_password.result
   db_port          = 5432
-  db_endpoint    = module.rds.db_endpoint
-  db_name        = "fleet_db"
+  db_endpoint      = module.rds.db_endpoint
+  db_name          = "fleet_db"
 }
 
 module "ecr" {

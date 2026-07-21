@@ -57,11 +57,11 @@ resource "aws_iam_role_policy_attachment" "external_dns_attachment" {
 }
 
 resource "helm_release" "external_dns" {
-  name             = "external-dns"
-  repository       = "https://kubernetes-sigs.github.io/external-dns/"
-  chart            = "external-dns"
-  namespace        = "kube-system"
-  version          = "1.14.3"
+  name       = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
+  chart      = "external-dns"
+  namespace  = "kube-system"
+  version    = "1.14.3"
 
   set {
     name  = "provider"

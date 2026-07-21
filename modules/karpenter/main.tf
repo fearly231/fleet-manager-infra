@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "karpenter_assume_role_policy" {
       variable = "${local.oidc_url_no_https}:sub"
       values   = ["system:serviceaccount:karpenter:karpenter"]
     }
-    
+
     condition {
       test     = "StringEquals"
       variable = "${local.oidc_url_no_https}:aud"
@@ -52,8 +52,8 @@ data "aws_iam_policy_document" "karpenter_policy_doc" {
   }
 
   statement {
-    actions = ["iam:PassRole"]
-    effect  = "Allow"
+    actions   = ["iam:PassRole"]
+    effect    = "Allow"
     resources = ["arn:aws:iam::*:role/${var.node_role_name}"]
   }
 }

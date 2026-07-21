@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "aws_lbc_assume_role_policy" {
       variable = "${local.oidc_url_no_https}:sub"
       values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
-    
+
     condition {
       test     = "StringEquals"
       variable = "${local.oidc_url_no_https}:aud"

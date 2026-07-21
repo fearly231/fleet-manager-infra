@@ -8,6 +8,11 @@ resource "random_password" "admin_password" {
   special = false
 }
 
+resource "random_password" "grafana_password" {
+  length  = 20
+  special = false
+}
+
 module "vpc" {
   source             = "../../modules/vpc"
   environment        = var.environment
@@ -47,9 +52,10 @@ module "secrets" {
   source         = "../../modules/secrets"
   environment    = var.environment
   db_username    = "fleet_admin"
-  db_password    = random_password.db_password.result
-  admin_password = random_password.admin_password.result
-  db_port        = 5432
+  db_password      = random_password.db_password.result
+  admin_password   = random_password.admin_password.result
+  grafana_password = random_password.grafana_password.result
+  db_port          = 5432
   db_endpoint    = module.rds.db_endpoint
   db_name        = "fleet_db_prod"
 }
@@ -89,4 +95,51 @@ module "eso" {
   oidc_provider_arn       = module.eks.oidc_provider_arn
   cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer
   depends_on              = [module.eks]
+}
+
+module "aws_lbc" {
+  source                  = "../../modules/aws-lbc"
+  environment             = var.environment
+  cluster_name            = module.eks.cluster_name
+  vpc_id                  = module.vpc.vpc_id
+  oidc_provider_arn       = module.eks.oidc_provider_arn
+  cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer
+  depends_on              = [module.eks]
+}
+
+module "karpenter" {
+  source                  = "../../modules/karpenter"
+  environment             = var.environment
+  cluster_name            = module.eks.cluster_name
+  cluster_endpoint        = module.eks.cluster_endpoint
+  oidc_provider_arn       = module.eks.oidc_provider_arn
+  cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer
+  node_role_name          = module.eks.node_role_name
+  node_profile_name       = module.eks.node_profile_name
+  depends_on              = [module.eks]
+}
+
+module "external_dns" {
+  source                  = "../../modules/external-dns"
+  environment             = var.environment
+  cluster_name            = module.eks.cluster_name
+  oidc_provider_arn       = module.eks.oidc_provider_arn
+  cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer
+  route53_zone_id         = module.dns.route53_zone_id
+  depends_on              = [module.eks]
+}
+
+module "ingress_nginx" {
+  source          = "../../modules/ingress-nginx"
+  environment     = var.environment
+  certificate_arn = module.dns.acm_certificate_arn
+  depends_on      = [module.eks, module.aws_lbc]
+}
+
+module "observability" {
+  source           = "../../modules/observability"
+  environment      = var.environment
+  domain_name      = "grafana.${var.domain_name}"
+  grafana_password = random_password.grafana_password.result
+  depends_on       = [module.eks, module.ingress_nginx]
 }

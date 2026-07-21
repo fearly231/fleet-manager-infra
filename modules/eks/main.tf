@@ -65,6 +65,10 @@ resource "aws_iam_role_policy_attachment" "ecr_policy" {
   role       = aws_iam_role.node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
+resource "aws_iam_instance_profile" "node_profile" {
+  name = "${var.environment}-fleet-eks-node-profile"
+  role = aws_iam_role.node_role.name
+}
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   version         = "1.35"

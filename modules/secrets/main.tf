@@ -12,5 +12,6 @@ resource "aws_secretsmanager_secret_version" "app_secrets_version" {
     DATABASE_URL           = "postgresql+psycopg://${var.db_username}:${var.db_password}@${var.db_endpoint}/${var.db_name}"
     SECRET_KEY             = random_password.jwt_secret.result
     DEFAULT_ADMIN_PASSWORD = var.admin_password
+    GRAFANA_ADMIN_PASSWORD = var.grafana_password
   })
 }

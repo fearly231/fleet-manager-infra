@@ -12,7 +12,7 @@ terraform {
 
   backend "s3" {
     bucket       = "fleet-manager-terraform-state-adam"
-    key          = "dev/fleet-manager.tfstate"
+    key          = "dev/02-kubernetes-addons/fleet-manager.tfstate"
     region       = "eu-central-1"
     use_lockfile = true
     encrypt      = true
@@ -25,6 +25,7 @@ provider "aws" {
       Project     = "fleet-manager"
       Environment = var.environment
       ManagedBy   = "Terraform"
+      Layer       = "Kubernetes-Addons"
     }
   }
 }

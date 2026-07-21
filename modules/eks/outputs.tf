@@ -22,3 +22,11 @@ output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
   value       = aws_eks_cluster.main.certificate_authority[0].data
 }
+output "node_role_name" {
+  description = "The name of the IAM role for EKS nodes"
+  value       = aws_iam_role.node_role.name
+}
+output "node_profile_name" {
+  description = "The name of the IAM instance profile for EKS nodes"
+  value       = aws_iam_instance_profile.node_profile.name
+}

@@ -18,7 +18,6 @@ variable "availability_zones" {
   description = "A list of availability zones for the subnets"
   type        = list(string)
 }
-
 variable "allowed_admin_cidrs" {
   description = "A list of CIDR blocks allowed to access the EKS cluster API"
   type        = list(string)
@@ -30,5 +29,10 @@ variable "capacity_type" {
 }
 variable "domain_name" {
   description = "The domain name for the application"
+  type        = string
+}
+
+variable "base_domain" {
+  description = "The base domain name of the Route53 Hosted Zone"
   type        = string
 }

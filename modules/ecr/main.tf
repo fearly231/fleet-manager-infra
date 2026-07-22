@@ -8,7 +8,8 @@ resource "aws_ecr_repository" "backend" {
 }
 resource "aws_ecr_repository" "frontend" {
   name                 = "${var.environment}-fleet-ecr-frontend"
-  image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
+  image_tag_mutability = "MUTABLE" # Must be MUTABLE so PR tags (pr-42) can be overwritten on subsequent pushes
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -32,11 +33,11 @@ resource "aws_ecr_lifecycle_policy" "backend" {
       },
       {
         rulePriority = 2
-        description  = "Keep only the last 10 tagged images"
+        description  = "Keep only the last 30 tagged images"
         selection = {
           tagStatus   = "any"
           countType   = "imageCountMoreThan"
-          countNumber = 10
+          countNumber = 30
         }
         action = {
           type = "expire"
@@ -64,11 +65,11 @@ resource "aws_ecr_lifecycle_policy" "frontend" {
       },
       {
         rulePriority = 2
-        description  = "Keep only the last 10 tagged images"
+        description  = "Keep only the last 30 tagged images"
         selection = {
           tagStatus   = "any"
           countType   = "imageCountMoreThan"
-          countNumber = 10
+          countNumber = 30
         }
         action = {
           type = "expire"

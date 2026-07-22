@@ -9,6 +9,9 @@ resource "helm_release" "ingress_nginx" {
   values = [
     yamlencode({
       controller = {
+        config = {
+          "ssl-redirect" = "false"
+        }
         service = {
           targetPorts = {
             https = "http"

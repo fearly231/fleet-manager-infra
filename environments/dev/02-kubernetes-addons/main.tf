@@ -47,13 +47,28 @@ resource "null_resource" "argocd_apps_cleanup" {
   provisioner "local-exec" {
     when    = destroy
     command = <<-EOT
-      echo "=== Rozpoczynam czyszczenie aplikacji przed destroy ==="
+      echo "=== Rozpoczynam czyszczenie klastra przed destroy ==="
       aws eks update-kubeconfig --region eu-central-1 --name $${self.triggers.cluster_name}
+      
+      # 1. NAJPIERW usuwamy wszystkie Ingressy, aby AWS LBC w tle zaczął kasować ALB w AWS
+      echo "--> Kasowanie obiektów Ingress (czyszczenie ALB i ENI w AWS)..."
+      kubectl delete ingress --all --all-namespaces --timeout=3m || true
+      
+      # 2. Usuwamy aplikacje w ArgoCD
+      echo "--> Kasowanie aplikacji ArgoCD..."
       kubectl delete applications --all -n argocd --wait=true --timeout=5m || true
-      kubectl delete nodepools --all --wait=true || true
-      kubectl delete nodeclaims --all --wait=true || true
-      sleep 30
-      echo "=== Czyszczenie zakonczone ==="
+      
+      # 3. Usuwamy przestrzenie nazw (wymusza wyczyszczenie ExternalSecrets i wolumenów EBS)
+      echo "--> Oczekiwanie na zamknięcie przestrzeni nazw..."
+      kubectl delete ns -l environment=ephemeral --timeout=5m || true
+      kubectl delete ns dev prod --timeout=5m || true
+      
+      # 4. Kasowanie obiektów Karpentera i oczekiwanie na odpięcie maszyn EC2
+      echo "--> Kasowanie NodePools i NodeClaims w Karpenterze..."
+      kubectl delete nodepools --all --wait=true --timeout=3m || true
+      kubectl delete nodeclaims --all --wait=true --timeout=3m || true
+      
+      echo "=== Czyszczenie zakończone sukcesem. Można bezpiecznie niszczyć VPC i EKS ==="
     EOT
   }
 

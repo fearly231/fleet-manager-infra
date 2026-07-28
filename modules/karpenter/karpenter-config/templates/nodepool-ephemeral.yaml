@@ -34,6 +34,10 @@ spec:
         operator: Gt
         values:
         - "3"
+      - key: environment
+        operator: In
+        values:
+        - ephemeral
       taints:
       - effect: NoSchedule
         key: environment

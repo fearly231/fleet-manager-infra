@@ -30,6 +30,13 @@ data "aws_iam_policy_document" "karpenter_policy_doc" {
   statement {
     actions = [
       "ssm:GetParameter",
+      "eks:DescribeCluster",
+      "iam:CreateInstanceProfile",
+      "iam:DeleteInstanceProfile",
+      "iam:GetInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+      "iam:AddRoleToInstanceProfile",
+      "iam:TagInstanceProfile",
       "ec2:DescribeImages",
       "ec2:RunInstances",
       "ec2:DescribeSubnets",

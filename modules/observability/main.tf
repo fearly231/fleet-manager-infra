@@ -36,6 +36,9 @@ resource "helm_release" "kube_prometheus_stack" {
             url       = "http://loki:3100"
             access    = "proxy"
             isDefault = false
+            jsonData = {
+              "dummy" = "value"
+            }
           }
         ]
       }
@@ -53,6 +56,11 @@ resource "helm_release" "loki" {
 
   set {
     name  = "grafana.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "grafana.sidecar.datasources.enabled"
     value = "false"
   }
 

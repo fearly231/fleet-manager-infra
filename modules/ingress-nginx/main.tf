@@ -9,6 +9,15 @@ resource "helm_release" "ingress_nginx" {
   values = [
     yamlencode({
       controller = {
+        metrics = {
+          enabled = true
+          serviceMonitor = {
+            enabled = true
+            additionalLabels = {
+              release = "prometheus"
+            }
+          }
+        }
         config = {
           "ssl-redirect" = "false"
         }

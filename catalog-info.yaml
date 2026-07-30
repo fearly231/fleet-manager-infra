@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fleet-manager-infra
+  description: Infrastructure as Code for Fleet Manager (Terraform)
+  links:
+    - url: https://github.com/fearly231/fleet-manager-infra
+      title: GitHub Repository
+      icon: github
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:default/guest

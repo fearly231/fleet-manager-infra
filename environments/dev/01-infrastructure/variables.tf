@@ -35,3 +35,21 @@ variable "base_domain" {
   description = "The base domain name of the Route53 Hosted Zone"
   type        = string
 }
+
+variable "github_client_id" {
+  description = "GitHub OAuth App Client ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "github_client_secret" {
+  description = "GitHub OAuth App Client Secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "github_token" {
+  description = "GitHub Personal Access Token for Backstage catalog"
+  type        = string
+  sensitive   = true
+}

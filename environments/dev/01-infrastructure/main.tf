@@ -77,3 +77,17 @@ module "github_oidc" {
   environment  = var.environment
   github_repos = ["fearly231/fleet-manager-infra", "fearly231/fleet-manager", "fearly231@146721105/fleet-manager-idp@1315395112"]
 }
+
+resource "aws_secretsmanager_secret" "idp_secrets" {
+  name = "dev-fleet-idp-secrets"
+  description = "Secrets for Fleet Manager IDP (Backstage)"
+}
+
+resource "aws_secretsmanager_secret_version" "idp_secrets_version" {
+  secret_id     = aws_secretsmanager_secret.idp_secrets.id
+  secret_string = jsonencode({
+    AUTH_GITHUB_CLIENT_ID     = var.github_client_id
+    AUTH_GITHUB_CLIENT_SECRET = var.github_client_secret
+    GITHUB_TOKEN              = var.github_token
+  })
+}

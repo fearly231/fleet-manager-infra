@@ -75,5 +75,5 @@ module "dns" {
 module "github_oidc" {
   source       = "../../../modules/github-oidc"
   environment  = var.environment
-  github_repos = ["fearly231/fleet-manager-infra", "fearly231/fleet-manager", "fearly231/fleet-manager-idp"]
+  github_repos = ["fearly231/fleet-manager-infra", "fearly231/fleet-manager", "fearly231@146721105/fleet-manager-idp@1315395112"]
 }

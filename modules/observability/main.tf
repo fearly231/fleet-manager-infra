@@ -1,4 +1,17 @@
+resource "kubernetes_ingress_class_v1" "nginx" {
+  metadata {
+    name = "nginx"
+    labels = {
+      "app.kubernetes.io/component" = "controller"
+    }
+  }
+  spec {
+    controller = "k8s.io/ingress-nginx"
+  }
+}
+
 resource "helm_release" "kube_prometheus_stack" {
+  depends_on       = [kubernetes_ingress_class_v1.nginx]
   name             = "prometheus"
   repository       = "https://prometheus-community.github.io/helm-charts"
   chart            = "kube-prometheus-stack"

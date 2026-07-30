@@ -71,6 +71,16 @@ module "dns" {
   domain_name = var.domain_name
 }
 
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    command     = "aws"
+  }
+}
+
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -133,7 +143,7 @@ module "ingress_nginx" {
   source          = "../../modules/ingress-nginx"
   environment     = var.environment
   certificate_arn = module.dns.acm_certificate_arn
-  depends_on      = [module.eks, module.aws_lbc]
+  depends_on      = [module.eks, module.aws_lbc, module.observability]
 }
 
 module "observability" {
@@ -141,5 +151,5 @@ module "observability" {
   environment      = var.environment
   domain_name      = "grafana.${var.domain_name}"
   grafana_password = random_password.grafana_password.result
-  depends_on       = [module.eks, module.ingress_nginx]
+  depends_on       = [module.eks]
 }

@@ -9,6 +9,9 @@ resource "helm_release" "ingress_nginx" {
   values = [
     yamlencode({
       controller = {
+        ingressClassResource = {
+          enabled = false
+        }
         metrics = {
           enabled = true
           serviceMonitor = {

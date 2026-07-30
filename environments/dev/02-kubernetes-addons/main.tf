@@ -21,6 +21,16 @@ locals {
   grafana_password     = data.terraform_remote_state.infra.outputs.grafana_password
 }
 
+provider "kubernetes" {
+  host                   = local.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(local.eks_cluster_ca_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", local.eks_cluster_name]
+    command     = "aws"
+  }
+}
+
 provider "helm" {
   kubernetes {
     host                   = local.eks_cluster_endpoint
@@ -118,7 +128,7 @@ module "ingress_nginx" {
   source          = "../../../modules/ingress-nginx"
   environment     = var.environment
   certificate_arn = local.acm_certificate_arn
-  depends_on      = [module.aws_lbc]
+  depends_on      = [module.aws_lbc, module.observability]
 }
 
 module "observability" {
@@ -126,5 +136,4 @@ module "observability" {
   environment      = var.environment
   domain_name      = "dev-grafana.${var.domain_name}"
   grafana_password = local.grafana_password
-  depends_on       = [module.ingress_nginx]
 }
